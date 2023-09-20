@@ -1,4 +1,5 @@
 import Algorithm.CryptAlg;
+import Algorithm.Feistel;
 import Algorithm.MasseyOmura;
 import Analyzer.AnalyzerAlg;
 import Analyzer.MasseyOmuraAnalyzer;
@@ -7,17 +8,22 @@ import java.math.BigInteger;
 
 public class Main {
     public static void main(String[] args) {
-        CryptAlg alg = new MasseyOmura(new BigInteger("234131"),new BigInteger("59861821"));
-        tryAlg(alg, "12345");
-        tryMasseyOmuraAnalizer();
+        CryptAlg alg = new Feistel(10, "AND");
+//        CryptAlg alg = new MasseyOmura(new BigInteger("234131"),new BigInteger("59861821"));
+
+        String message = "Hello World!";
+//        String message = "12345";
+
+        tryAlg(alg, message);
+//        tryMasseyOmuraAnalizer();
     }
 
     public static void tryAlg(CryptAlg alg, String message){
         String cipher = alg.encrypt(message);
         String result = alg.decrypt(cipher);
-        System.out.println("message = " + message);
-        System.out.println("cipher = " + cipher);
-        System.out.println("result = " + result);
+        System.out.println("Message = " + message);
+        System.out.println("Cipher text  = " + cipher);
+        System.out.println("decryption result = " + result);
     }
 
     public static void tryMasseyOmuraAnalizer(){
