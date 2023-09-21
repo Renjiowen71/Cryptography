@@ -1,21 +1,38 @@
-import Algorithm.CryptAlg;
-import Algorithm.Feistel;
-import Algorithm.MasseyOmura;
+import Algorithm.*;
 import Analyzer.AnalyzerAlg;
+import Analyzer.ElGamalAnalyzer;
 import Analyzer.MasseyOmuraAnalyzer;
 
 import java.math.BigInteger;
 
 public class Main {
     public static void main(String[] args) {
-        CryptAlg alg = new Feistel(10, "AND");
+//        CryptAlg alg = new Feistel(10, "AND");
 //        CryptAlg alg = new MasseyOmura(new BigInteger("234131"),new BigInteger("59861821"));
+//        AsyCryptAlg alg1 = new ELGamal(new BigInteger("2341"),new BigInteger("7345"),new BigInteger("59861821"), new BigInteger("234131"));
+//        AsyCryptAlg alg2 = new ELGamal(new BigInteger("3235"),new BigInteger("6345"),new BigInteger("59861821"), new BigInteger("234131"));
 
-        String message = "Hello World!";
-//        String message = "12345";
+//        String message = "Hello World!";
+        String message = "14235";
 
-        tryAlg(alg, message);
-//        tryMasseyOmuraAnalizer();
+//        tryAsyAlg(alg1, alg2, message);
+//        tryAlg(alg, message);
+//        tryMasseyOmuraAnalizer(message);
+        tryElGamalAnalyzer(message);
+    }
+    public static void tryAsyAlg(AsyCryptAlg alg1, AsyCryptAlg alg2, String message){
+        String cipher = alg1.encrypt(alg2.getPublicKey(),message);
+        System.out.println("======= alg1 ==> alg2 ======");
+        String result = alg2.decrypt(cipher);
+        System.out.println("Message = " + message);
+        System.out.println("Cipher text  = " + cipher);
+        System.out.println("decryption result = " + result);
+        System.out.println("======= alg2 ==> alg1 ======");
+        cipher = alg2.encrypt(alg1.getPublicKey(),message);
+        result = alg1.decrypt(cipher);
+        System.out.println("Message = " + message);
+        System.out.println("Cipher text  = " + cipher);
+        System.out.println("decryption result = " + result);
     }
 
     public static void tryAlg(CryptAlg alg, String message){
@@ -26,11 +43,10 @@ public class Main {
         System.out.println("decryption result = " + result);
     }
 
-    public static void tryMasseyOmuraAnalizer(){
+    public static void tryMasseyOmuraAnalizer(String message){
         BigInteger p = new BigInteger("2679163");
         CryptAlg algA = new MasseyOmura(new BigInteger("234131"),p);
         CryptAlg algB = new MasseyOmura(new BigInteger("234523"),p);
-        String message = "12345";
         String y1 = algA.encrypt(message);
         String y2 = algB.encrypt(y1);
         String y3 = algA.decrypt(y2);
@@ -42,5 +58,14 @@ public class Main {
                 p
         );
         masseyOmuraAnalyze.analyze();
+    }
+
+    public static void tryElGamalAnalyzer(String message){
+        BigInteger p = new BigInteger("59861821");
+        BigInteger a = new BigInteger("234131");
+        AsyCryptAlg alg1 = new ELGamal(new BigInteger("2341"),new BigInteger("7345"),p,a);
+        AsyCryptAlg alg2 = new ELGamal(new BigInteger("3235"),new BigInteger("6345"),p,a);
+        AnalyzerAlg elGamalAnalyzer = new ElGamalAnalyzer(alg2.getPublicKey(),p,a,alg1.encrypt(alg2.getPublicKey(),message));
+        elGamalAnalyzer.analyze();
     }
 }
