@@ -13,12 +13,12 @@ public class Main {
 //        AsyCryptAlg alg2 = new ELGamal(new BigInteger("3235"),new BigInteger("6345"),new BigInteger("59861821"), new BigInteger("234131"));
 
 //        String message = "Hello World!";
-        String message = "14235";
+//        String message = "14235";
 
 //        tryAsyAlg(alg1, alg2, message);
 //        tryAlg(alg, message);
-//        tryMasseyOmuraAnalizer(message);
-        tryElGamalAnalyzer(message);
+//        ElGamalAnalyzer.tryAnalyzer(message);
+//        MasseyOmuraAnalyzer.tryAnalyzer(message);
     }
     public static void tryAsyAlg(AsyCryptAlg alg1, AsyCryptAlg alg2, String message){
         String cipher = alg1.encrypt(alg2.getPublicKey(),message);
@@ -41,31 +41,5 @@ public class Main {
         System.out.println("Message = " + message);
         System.out.println("Cipher text  = " + cipher);
         System.out.println("decryption result = " + result);
-    }
-
-    public static void tryMasseyOmuraAnalizer(String message){
-        BigInteger p = new BigInteger("2679163");
-        CryptAlg algA = new MasseyOmura(new BigInteger("234131"),p);
-        CryptAlg algB = new MasseyOmura(new BigInteger("234523"),p);
-        String y1 = algA.encrypt(message);
-        String y2 = algB.encrypt(y1);
-        String y3 = algA.decrypt(y2);
-        System.out.println("Real Message = "+algB.decrypt(y3));
-        AnalyzerAlg masseyOmuraAnalyze = new MasseyOmuraAnalyzer(
-                new BigInteger(y1),
-                new BigInteger(y2),
-                new BigInteger(y3),
-                p
-        );
-        masseyOmuraAnalyze.analyze();
-    }
-
-    public static void tryElGamalAnalyzer(String message){
-        BigInteger p = new BigInteger("59861821");
-        BigInteger a = new BigInteger("234131");
-        AsyCryptAlg alg1 = new ELGamal(new BigInteger("2341"),new BigInteger("7345"),p,a);
-        AsyCryptAlg alg2 = new ELGamal(new BigInteger("3235"),new BigInteger("6345"),p,a);
-        AnalyzerAlg elGamalAnalyzer = new ElGamalAnalyzer(alg2.getPublicKey(),p,a,alg1.encrypt(alg2.getPublicKey(),message));
-        elGamalAnalyzer.analyze();
     }
 }

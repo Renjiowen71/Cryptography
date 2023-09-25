@@ -1,5 +1,8 @@
 package Analyzer;
 
+import Algorithm.AsyCryptAlg;
+import Algorithm.ELGamal;
+
 import java.math.BigInteger;
 
 public class ElGamalAnalyzer implements AnalyzerAlg{
@@ -13,6 +16,7 @@ public class ElGamalAnalyzer implements AnalyzerAlg{
         this.y = new BigInteger(y);
         this.p = p;
         this.a = a;
+        System.out.println("Cipher message = "+cipher);
         String akAndKm[] = cipher.split(",");
         this.ak = new BigInteger(akAndKm[0]);
         this.Km = new BigInteger(akAndKm[1]);
@@ -28,6 +32,17 @@ public class ElGamalAnalyzer implements AnalyzerAlg{
         BigInteger K = y.modPow(k,p);
         BigInteger Kinverse = K.modInverse(p);
         m = Kinverse.multiply(Km).mod(p);
-        System.out.println("message = "+m);
+        System.out.println("Decrypted Message = "+m);
+    }
+
+    public static void tryAnalyzer(String message){
+        System.out.println("Real message = "+message);
+        BigInteger p = new BigInteger("59861821");
+        BigInteger a = new BigInteger("234131");
+        AsyCryptAlg alg1 = new ELGamal(new BigInteger("2341"),new BigInteger("7345"),p,a);
+        AsyCryptAlg alg2 = new ELGamal(new BigInteger("3235"),new BigInteger("6345"),p,a);
+        String cipher = alg1.encrypt(alg2.getPublicKey(),message);
+        AnalyzerAlg elGamalAnalyzer = new ElGamalAnalyzer(alg2.getPublicKey(),p,a,cipher);
+        elGamalAnalyzer.analyze();
     }
 }
