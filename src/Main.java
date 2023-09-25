@@ -15,6 +15,7 @@ public class Main {
 //        String message = "Hello World!";
 //        String message = "14235";
 
+
 //        tryAsyAlg(alg1, alg2, message);
 //        tryAlg(alg, message);
 //        ElGamalAnalyzer.tryAnalyzer(message);
