@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 public class Rsa implements AsyCryptAlg{
-    int p,q,n,z,i,e,d;
+    int p,q,n,z,e,d;
     public Rsa(){
         d = 0;
         p = 5;
@@ -13,15 +13,13 @@ public class Rsa implements AsyCryptAlg{
         z = (p-1)*(q-1);
         for (e = 2; e < z; e++) {
 
-            // e is for public key exponent
             if (gcd(e, z) == 1) {
                 break;
             }
         }
-        for (i = 0; i <= 9; i++) {
+        for (int i = 0; i <= 9; i++) {
             int x = 1 + (i * z);
 
-            // d is for private key exponent
             if (x % e == 0) {
                 d = x / e;
                 break;
@@ -36,6 +34,7 @@ public class Rsa implements AsyCryptAlg{
         int e = Integer.parseInt(s[1]);
         int m = Integer.parseInt(message);
         double r = ((Math.pow(m,e)) % n);
+        System.out.println("d:"+d+" z:"+z+" p:"+p+" q:"+q);
         return Double.toString(r);
     }
 
