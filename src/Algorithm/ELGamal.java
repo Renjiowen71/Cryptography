@@ -1,5 +1,7 @@
 package Algorithm;
 
+import Algorithm.Interface.AsyCryptAlg;
+
 import java.math.BigInteger;
 
 public class ELGamal implements AsyCryptAlg{
@@ -7,7 +9,8 @@ public class ELGamal implements AsyCryptAlg{
     private BigInteger x;
     private BigInteger p;
     private BigInteger a;
-
+    
+    //Constructor Example AsyCryptAlg alg2 = new ELGamal(new BigInteger("3235"),new BigInteger("6345"),new BigInteger("59861821"), new BigInteger("234131"));
     public ELGamal(BigInteger k, BigInteger x, BigInteger p, BigInteger a) {
         this.k = k;
         this.x = x;

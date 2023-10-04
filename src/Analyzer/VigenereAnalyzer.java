@@ -1,5 +1,7 @@
 package Analyzer;
 
+import Analyzer.Interface.AnalyzerAlg;
+
 public class VigenereAnalyzer implements AnalyzerAlg {
     private String ciphertext;
 

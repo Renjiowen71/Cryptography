@@ -1,7 +1,8 @@
 package Analyzer;
 
-import Algorithm.CryptAlg;
+import Algorithm.Interface.CryptAlg;
 import Algorithm.MasseyOmura;
+import Analyzer.Interface.AnalyzerAlg;
 
 import java.math.BigInteger;
 

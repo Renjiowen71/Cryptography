@@ -1,11 +1,14 @@
 package Algorithm;
 
+import Algorithm.Interface.CryptAlg;
+
 import java.util.ArrayList;
-public class Feistel implements  CryptAlg{
+public class Feistel implements CryptAlg {
     private String functionOperator;
     private int totalRound;
     private ArrayList<String> keys = new ArrayList<>();
 
+    //Constructor Example CryptAlg alg = new Feistel(10, "AND");
     public Feistel(int round, String functionOperator) {
         this.functionOperator = functionOperator.toUpperCase();
         this.totalRound = round;
@@ -16,10 +19,9 @@ public class Feistel implements  CryptAlg{
         }
     }
 
-
-    public Feistel(int round, String functionOperator, ArrayList keys) {
+    public Feistel(ArrayList keys, String functionOperator) {
         this.functionOperator = functionOperator.toUpperCase();
-        this.totalRound = round;
+        this.totalRound = keys.size();
         this.keys = keys;
     }
     @Override
@@ -54,7 +56,7 @@ public class Feistel implements  CryptAlg{
         return sb.toString();
     }
 
-    private String decryptChar(char encryptedCharacter) {
+    public String decryptChar(char encryptedCharacter) {
         String encryptedBinary = String.format("%08d", Integer.parseInt(Integer.toString(encryptedCharacter, 2)));
         String left = encryptedBinary.substring(0, 4);
         String right = encryptedBinary.substring(4);
@@ -75,6 +77,12 @@ public class Feistel implements  CryptAlg{
         switch (functionOperator) {
             case "AND":
                 encryptedText = AND(right, currentKey);
+                break;
+            case"XOR":
+                encryptedText = XOR(right, currentKey);
+                break;
+            case "NXOR":
+                encryptedText = NXOR(right, currentKey);
                 break;
             default:
                 encryptedText = OR(right, currentKey);
@@ -103,6 +111,14 @@ public class Feistel implements  CryptAlg{
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < left.length(); i++) {
             stringBuilder.append((left.charAt(i) - '0') ^ (right.charAt(i) - '0'));
+        }
+        return stringBuilder.toString();
+    }
+
+    private String NXOR(String left, String right) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < left.length(); i++) {
+            stringBuilder.append((left.charAt(i) - '0') == (right.charAt(i) - '0')?1:0);
         }
         return stringBuilder.toString();
     }

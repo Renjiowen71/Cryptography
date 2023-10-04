@@ -1,11 +1,15 @@
 package Algorithm;
 
+import Algorithm.Interface.CryptAlg;
+
 import java.math.BigInteger;
 public class MasseyOmura implements CryptAlg {
     private BigInteger m;
     private BigInteger p;
     private BigInteger Akey;
     private BigInteger AInverseKey;
+
+    //Constructor Example CryptAlg alg = new MasseyOmura(new BigInteger("234131"),new BigInteger("59861821"));
     public MasseyOmura(BigInteger Akey, BigInteger p){
         this.Akey = Akey;
         this.p = p;

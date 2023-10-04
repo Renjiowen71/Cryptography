@@ -1,9 +1,11 @@
 package Algorithm;
 
+import Algorithm.Interface.AsyCryptAlg;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-public class Rsa implements AsyCryptAlg{
+public class Rsa implements AsyCryptAlg {
     int p,q,n,z,e,d;
     public Rsa(){
         d = 0;

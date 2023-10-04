@@ -1,8 +1,10 @@
 package Analyzer;
 
+import Analyzer.Interface.AnalyzerAlg;
+
 import java.util.*;
 
-public class SimpleSubstitutionAnalyzer implements AnalyzerAlg{
+public class SimpleSubstitutionAnalyzer implements AnalyzerAlg {
     String c;
     int[] frequency;
     ArrayList<Character> alphabet;

@@ -1,5 +1,7 @@
 package Algorithm;
 
+import Algorithm.Interface.CryptAlg;
+
 public class VigenereCipher implements CryptAlg {
     private String key;
 

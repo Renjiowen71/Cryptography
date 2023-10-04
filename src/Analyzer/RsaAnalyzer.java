@@ -1,8 +1,10 @@
 package Analyzer;
 
+import Analyzer.Interface.AnalyzerAlg;
+
 import java.math.BigInteger;
 
-public class RsaAnalyzer implements AnalyzerAlg{
+public class RsaAnalyzer implements AnalyzerAlg {
 
     BigInteger d;
     BigInteger z;
