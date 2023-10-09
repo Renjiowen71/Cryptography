@@ -45,29 +45,40 @@ public class FeistelAnalyzer implements AnalyzerAlg {
     @Override
     public void analyze() {
         currentPossibleKeys=0;
-        buildKeyandAnalyze(0);
-        ArrayList<HashMap<Character, AtomicLong>> allCharCounts = printPossibleResultAndCountChar();
-        ArrayList<ArrayList<Character>>  predictionSentence = predict(allCharCounts);
-        printFinalPrediction(predictionSentence);
+        String[] functionOperators=functionOperator.split(",");
+        for(int i = 0;i<functionOperators.length;i++){
+            functionOperator = functionOperators[i];
+            currentPossibleKeys=0;
+            System.out.println("Function Operator = "+functionOperator);
+            buildKeyandAnalyze(0);
+
+            ArrayList<HashMap<Character, AtomicLong>> allCharCounts = printPossibleResultAndCountChar(true);
+            ArrayList<ArrayList<Character>>  predictionSentence = predict(allCharCounts);
+            printFinalPrediction(predictionSentence);
+        }
     }
 
-    private ArrayList<HashMap<Character, AtomicLong>> printPossibleResultAndCountChar() {
-        System.out.println("Possible Message, Key:");
+    private ArrayList<HashMap<Character, AtomicLong>> printPossibleResultAndCountChar(boolean printResult) {
+        if(printResult)System.out.println("Possible Message, Key:");
         ArrayList<HashMap<Character, AtomicLong>> allCharCounts = new ArrayList<>();
         possibleResult.forEach((key, message)->{
-            System.out.print("("+message+")");
-            System.out.print(", {");
+            if(printResult) {
+                System.out.print("(" + message + ")");
+                System.out.print(", {");
+            }
             for(int i =0; i<message.length();i++){
                 if(allCharCounts.size()<i+1) allCharCounts.add(new HashMap<Character, AtomicLong>());
                 allCharCounts.get(i).putIfAbsent(message.charAt(i), new AtomicLong(0));
                 long temp = allCharCounts.get(i).get(message.charAt(i)).incrementAndGet();
             }
-            key.forEach((k)->{
-                System.out.print("(");
-                System.out.print(k);
-                System.out.print(")");
-            });
-            System.out.println("}");
+            if(printResult) {
+                key.forEach((k) -> {
+                    System.out.print("(");
+                    System.out.print(k);
+                    System.out.print(")");
+                });
+                System.out.println("}");
+            }
         });
         return allCharCounts;
     }
@@ -108,6 +119,7 @@ public class FeistelAnalyzer implements AnalyzerAlg {
                 System.out.print(")");
             }
         });
+        System.out.println();
     }
 
     public void buildKeyandAnalyze(int currentRound){
