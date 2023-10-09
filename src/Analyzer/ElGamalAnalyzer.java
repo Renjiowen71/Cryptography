@@ -41,8 +41,8 @@ public class ElGamalAnalyzer implements AnalyzerAlg {
         System.out.println("Real message = "+message);
         BigInteger p = new BigInteger("59861821");
         BigInteger a = new BigInteger("234131");
-        AsyCryptAlg alg1 = new ELGamal(new BigInteger("2341"),new BigInteger("7345"),p,a);
-        AsyCryptAlg alg2 = new ELGamal(new BigInteger("3235"),new BigInteger("6345"),p,a);
+        AsyCryptAlg alg1 = new ELGamal(new BigInteger("2341"),new BigInteger("7345"),p,a, false);
+        AsyCryptAlg alg2 = new ELGamal(new BigInteger("3235"),new BigInteger("6345"),p,a, false);
         String alg2PublicKey = alg2.getPublicKey(); // public key = 4519028
         String cipher = alg1.encrypt(alg2PublicKey,message); // cipher = 24019872,48030646
         AnalyzerAlg elGamalAnalyzer = new ElGamalAnalyzer(alg2PublicKey,p,a,cipher);
