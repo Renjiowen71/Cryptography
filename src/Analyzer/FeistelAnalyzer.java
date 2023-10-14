@@ -33,7 +33,7 @@ public class FeistelAnalyzer implements AnalyzerAlg {
     private HashMap<ArrayList<String>, String> possibleResult = new HashMap<>();
     private int possibleKeysMax;
     private int currentPossibleKeys;
-
+    private final boolean printResult = true;
     public FeistelAnalyzer(String cipher, int totalRound, String functionOperator, int possibleKeysMax){
         this.cipher = cipher;
         System.out.println("Cipher message = "+cipher);
@@ -50,34 +50,21 @@ public class FeistelAnalyzer implements AnalyzerAlg {
             functionOperator = functionOperators[i];
             currentPossibleKeys=0;
             System.out.println("Function Operator = "+functionOperator);
+            if(printResult)System.out.println("Possible Message, Key:");
             buildKeyandAnalyze(0);
-
-            ArrayList<HashMap<Character, AtomicLong>> allCharCounts = printPossibleResultAndCountChar(true);
+            ArrayList<HashMap<Character, AtomicLong>> allCharCounts = printPossibleResultAndCountChar();
             ArrayList<ArrayList<Character>>  predictionSentence = predict(allCharCounts);
             printFinalPrediction(predictionSentence);
         }
     }
 
-    private ArrayList<HashMap<Character, AtomicLong>> printPossibleResultAndCountChar(boolean printResult) {
-        if(printResult)System.out.println("Possible Message, Key:");
+    private ArrayList<HashMap<Character, AtomicLong>> printPossibleResultAndCountChar() {
         ArrayList<HashMap<Character, AtomicLong>> allCharCounts = new ArrayList<>();
         possibleResult.forEach((key, message)->{
-            if(printResult) {
-                System.out.print("(" + message + ")");
-                System.out.print(", {");
-            }
             for(int i =0; i<message.length();i++){
                 if(allCharCounts.size()<i+1) allCharCounts.add(new HashMap<Character, AtomicLong>());
                 allCharCounts.get(i).putIfAbsent(message.charAt(i), new AtomicLong(0));
                 long temp = allCharCounts.get(i).get(message.charAt(i)).incrementAndGet();
-            }
-            if(printResult) {
-                key.forEach((k) -> {
-                    System.out.print("(");
-                    System.out.print(k);
-                    System.out.print(")");
-                });
-                System.out.println("}");
             }
         });
         return allCharCounts;
@@ -155,14 +142,26 @@ public class FeistelAnalyzer implements AnalyzerAlg {
         }
         if (success){
             possibleResult.put((ArrayList<String>)keys.clone(),sb.toString());
+            if(printResult) {
+                System.out.print("(" + sb.toString() + ")");
+                System.out.print(", {");
+            }
+            if(printResult) {
+                keys.forEach((k) -> {
+                    System.out.print("(");
+                    System.out.print(k);
+                    System.out.print(")");
+                });
+                System.out.println("}");
+            }
             currentPossibleKeys++;
         }
     }
 
     public static void tryAnalyzer(String message){
-        int totalRound = 10;
-        int possibleKeysMax = 30;
-        String functionOperator = "nxor";
+        int totalRound = 7;
+        int possibleKeysMax = 9999;
+        String functionOperator = "or";
         Feistel feistel = new Feistel(totalRound, functionOperator);
         String cipher = feistel.encrypt(message);
         FeistelAnalyzer feistelAnalyzer = new FeistelAnalyzer(cipher, totalRound, functionOperator, possibleKeysMax);
