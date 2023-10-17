@@ -6,28 +6,34 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 public class Rsa implements AsyCryptAlg {
-    int p,q,n,z,e,d;
-    public Rsa(){
-        d = 0;
-        p = 5;
-        q = 97;
-        n = p*q;
-        z = (p-1)*(q-1);
-        for (e = 2; e < z; e++) {
+    BigInteger p, q, n, e, z, d;
 
-            if (gcd(e, z) == 1) {
+    public Rsa(BigInteger p, BigInteger q) {
+        d = BigInteger.ZERO;
+        this.p = p;
+        this.q = q;
+        n = p.multiply(q);
+        z = ((p.subtract(BigInteger.ONE))).multiply((q.subtract(BigInteger.ONE)));
+        e = BigInteger.TWO;
+        while (e.compareTo(z) < 0) {
+            if (gcd(e, z).compareTo(BigInteger.ONE) == 0 && gcd(e, n).compareTo(BigInteger.ONE) == 0) {
                 break;
             }
+            e = e.add(BigInteger.ONE);
         }
-        for (int i = 0; i <= 9; i++) {
-            int x = 1 + (i * z);
-
-            if (x % e == 0) {
-                d = x / e;
+        BigInteger i = BigInteger.ZERO;
+        BigInteger stop = new BigInteger("20");
+        while(i.compareTo(stop) < 0) {
+            BigInteger x = z.multiply(i).add(BigInteger.ONE);
+            System.out.println(x);
+            if (x.mod(e).compareTo(BigInteger.ZERO) == 0) {
+                d = x.divide(e);
                 break;
             }
+            i = i.add(BigInteger.ONE);
         }
     }
+
 
     @Override
     public String encrypt(String publicKey, String message) {
@@ -36,28 +42,28 @@ public class Rsa implements AsyCryptAlg {
         int e = Integer.parseInt(s[1]);
         int m = Integer.parseInt(message);
         double r = ((Math.pow(m,e)) % n);
-        System.out.println("d:"+d+" z:"+z+" p:"+p+" q:"+q);
+        System.out.println("d:"+d+" z:"+z+" p:"+p+" q:"+q+" e:"+e+" n:"+n);
         return Double.toString(r);
     }
 
     @Override
     public String decrypt(String cipher) {
-        BigInteger N = BigInteger.valueOf(n);
         BigInteger C = BigDecimal.valueOf(Double.valueOf(cipher)).toBigInteger();
-        BigInteger msgback = (C.pow(d)).mod(N);
+        BigInteger msgback = (C.pow(d.intValue())).mod(n);
         return String.valueOf(msgback);
     }
 
     @Override
     public String getPublicKey() {
-        return Integer.toString(n) +","+ Integer.toString(e);
+        return n +","+ e;
     }
 
-    static int gcd(int e, int z)
+    static BigInteger gcd(BigInteger e, BigInteger z)
     {
-        if (e == 0)
+        if (e.compareTo(BigInteger.ZERO) == 0)
             return z;
         else
-            return gcd(z % e, e);
+            return gcd(z.mod(e), e);
     }
+
 }

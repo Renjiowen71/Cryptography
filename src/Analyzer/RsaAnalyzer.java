@@ -6,29 +6,26 @@ import java.math.BigInteger;
 
 public class RsaAnalyzer implements AnalyzerAlg {
 
-    BigInteger d;
-    BigInteger z;
-    BigInteger p;
-    BigInteger q;
-    BigInteger n;
-    BigInteger cipher;
+    BigInteger d, z, p, q, n, e, cipher;
 
-    public RsaAnalyzer(String arg,BigInteger e,String cipher){
-        this.n = e;
+    public RsaAnalyzer(String arg,BigInteger e,BigInteger n,String cipher){
+        this.n = n;
+        this.e = e;
         this.cipher = new BigInteger(cipher);
         if(arg.charAt(0) == 'd'){
             d = new BigInteger(arg.substring(1));
         }
         else if(arg.charAt(0) == 'z'){
             z = new BigInteger(arg.substring(1));
+            System.out.println(z);
             d = e.modInverse(z);
+            System.out.println(d);
         }
         else if(arg.charAt(0) == 'p'){
             int q_pos = arg.indexOf('q');
             p = new BigInteger(arg.substring(1,q_pos));
             q = new BigInteger(arg.substring(q_pos+1));
-            BigInteger one = new BigInteger("1");
-            z = (p.subtract(one)).multiply(q.subtract(one));
+            z = (p.subtract(BigInteger.ONE)).multiply(q.subtract(BigInteger.ONE));
             d = e.modInverse(z);
         }
     }
