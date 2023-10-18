@@ -24,23 +24,23 @@ public class VigenereCipher implements CryptAlg {
         StringBuilder ciphertext = new StringBuilder();
         int keyLength = key.length();
         int keyIndex = 0;
-    
+
         for (int i = 0; i < message.length(); i++) {
             char plainChar = message.charAt(i);
             if (Character.isLetter(plainChar)) {
                 char keyChar = Character.toUpperCase(key.charAt(keyIndex % keyLength));
                 int shift = keyChar - 'A';
                 char encryptedChar = (char) (Character.isUpperCase(plainChar) ?
-                                               ('A' + (plainChar + shift - 'A') % 26) :
-                                               ('a' + (plainChar + shift - 'a') % 26));
+                        ('A' + (plainChar + shift - 'A') % 26) :
+                        ('a' + (plainChar + shift - 'a') % 26));
                 ciphertext.append(encryptedChar);
                 keyIndex++;
             } else {
-                // Non-alphabetic characters are not encrypted
+                // Non-alphabetic characters are not encrypted, but spaces are preserved
                 ciphertext.append(plainChar);
             }
         }
-    
+
         return ciphertext.toString();
     }
 
