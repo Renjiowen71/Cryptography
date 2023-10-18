@@ -27,11 +27,9 @@ public class caesarcypher {
                 if (Character.isLetter(c) && Character.isLowerCase(c)) { //IF letter matches the message 
 
                     char shifted = (char) ('a' + (c - 'a' + shift) % 26); //Shift the letter by the integer key
-
                     result.append(shifted); //print the result
 
                 } else { //ELSE append the text
-
                     result.append(c);
                 }
             }
@@ -45,9 +43,7 @@ public class caesarcypher {
          * @return decrypt message.
          */
         public static String decrypt(String text, int shift) {
-
             return encrypt(text, 26 - shift); 
-
         }
     
         /**
