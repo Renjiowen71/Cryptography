@@ -1,103 +1,132 @@
 package Algorithm;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
+/**
+ *  this caesar cypher cryptosystem encrypts a normal text by shifting the letter by 
+ *  the interger number found on the key. Once the key is utilized the number the key shifts 
+ *  the normal text encypting and decrypting it by the reverse process.
+ */
 public class caesarcypher {
     
-    /*
-     * the main part allows the user to create its own plain text to decrypt 
-     * and a key(interger) that is used to help encrypt and decrypt the 
-     * cryptosystem. This system is called a caesar cypher cryptosystem with an 
-     * encryption decryption implementation 
-     */
-    public static void main(String[] args){
-
-        Scanner scanner = new Scanner(System.in);
-
-        //Allows the user to write a plain text to encrypt
-        System.out.print("Enter plain text: "); 
-        String plaintext = scanner.nextLine();
-
-        //allows the user to write a designated key
-        System.out.print("Enter a Integer key: ");
-        int key = scanner.nextInt();
-
-        // Encrypts it using the caesar cypher method
-        String Encryptedtext = Encrypt(plaintext, key);
-        System.out.print("Encrypted Text: " + Encryptedtext);
-
-        // Decrypts the encrypted text.
-        String Decryptedtext = Decrypt(Encryptedtext, key);
-        System.out.print("    Decrypted Text: " + Decryptedtext);
-
-        scanner.close();
-
-    }
     /**
-     * Takes the text and key and encrypts the text using the caesar cypher
-     * method, shifts the letter by the key ammount.
-     * returns back the encrypted text.
-     * @param plaintext
-     * @param key
-     * @return Encryptedtext
+     * the encrypt message stores the characters array of alphabetical letters
+     * it then loops through the letters in the original text and shifts it by 
+     * the integer key.
+     * @param text
+     * @param shift
+     * @return result
      */
-    public static String Encrypt(String plaintext, int key){
+    public static String encrypt(String text, int shift) {
 
-        StringBuilder Encryptedtext = new StringBuilder();
+            StringBuilder result = new StringBuilder(); 
 
-        for(char c : plaintext.toCharArray()) { //loops through the characters in the array.
-             
-            if (Character.isLetter(c)) { //IF it is the letters from the text encrypt the text
-
-                char base = Character.isUpperCase(c) ? 'A' : 'a';
-                int originalAlphabetPosition = c - base;
-                int newAlphabetPosition = (originalAlphabetPosition + key) % 26;
-
-                char encryptedChar = (char) (base + newAlphabetPosition);
-                Encryptedtext.append(encryptedChar);
-
-            } else { //append the text
-
-                Encryptedtext.append(c); 
-            }
-        }
-
-        return Encryptedtext.toString();
-
-    }
-        /**
-         * takes the encrypted text and decrypts it using the caesar cypher method
-         * returns with the decrypted message. 
-         * @param EncryptedText
-         * @param key
-         * @return DecryptedText
-         */
-        public static String Decrypt(String EncryptedText, int key) {
-
-        StringBuilder DecryptedText = new StringBuilder();
-        
-        for (char c : EncryptedText.toCharArray()) { //loops through the characters in the array.
-
-            if (Character.isLetter(c)) { //IF it is the encrypted text THEN decrypt the text
+            for (char c : text.toCharArray()) { //FOR every letter in the array
                 
+                if (Character.isLetter(c) && Character.isLowerCase(c)) { //IF letter matches the message 
 
-                char base = Character.isUpperCase(c) ? 'A' : 'a';
-                int originalAlphabetPosition = c - base;
-                int newAlphabetPosition = (originalAlphabetPosition - key + 26) % 26;
+                    char shifted = (char) ('a' + (c - 'a' + shift) % 26); //Shift the letter by the integer key
+
+                    result.append(shifted); //print the result
+
+                } else { //ELSE append the text
+
+                    result.append(c);
+                }
+            }
+            return result.toString();
+        }
+    
+        /**
+         * the decrypt message is just reversing the function.
+         * @param text
+         * @param shift
+         * @return decrypt message.
+         */
+        public static String decrypt(String text, int shift) {
+
+            return encrypt(text, 26 - shift); 
+
+        }
+    
+        /**
+         * ask the users for the text aswell as the integer key used for encryption
+         * and decryptions, integer key must range between 1 and 25
+         * @param args
+         */
+        public static void main(String[] args) {
+            
+            Scanner scanner = new Scanner(System.in); //set variables for user interface
+
+            String originalText = "jhlzhyjfwoly"; // original text 
+            
+            System.out.print("Enter the integer key: "); //the key
+            int shiftAmount = scanner.nextInt();
+    
+            if (shiftAmount < 1 || shiftAmount > 25) { //IF it is not between the value range show message
+                System.out.println("Invalid key. Please use a number between 1 and 25.");
+                return;
+            }
+
+            if(shiftAmount == 19){ //IF it is the right integer show output (FOR THE GAME PURPOSE ONLY)
+                
+                System.out.println("YYAAAAAAAAAAAAAAAAAAYYYYYYYY!!!!!!!!!!");
+
+                String encryptedText = encrypt(originalText, shiftAmount);
+                System.out.println("Encrypted: " + encryptedText);
+        
+                String decryptedText = decrypt(encryptedText, shiftAmount);
+                System.out.println("Decrypted: " + decryptedText);
+    
+                double ioc = calculateIoC(originalText); 
+                System.out.println("Index of Coincidence: " + ioc);
 
 
-                char decryptedChar = (char) (base + newAlphabetPosition);
-                DecryptedText.append(decryptedChar);
+            } else {
 
-            } else { //ELSE append the text 
-
-                DecryptedText.append(c);
+                System.out.println("SOOORRRYYY TRY AGAIN");
 
             }
-        }
-        
-        return DecryptedText.toString();
 
+
+        }
+        /**
+         * Method use to calculate the the Index of coincidence 
+         * by the letters shown the the original text, it then
+         * calculates by using the IOC formula.
+         * @param originalText
+         * @return
+         */
+        private static double calculateIoC(String originalText) {
+            
+            // Remove non-alphabetic characters and convert to uppercase
+            originalText = originalText.replaceAll("[^a-zA-Z]", "").toUpperCase();
+
+            int totalCharacters = originalText.length();
+
+            if (totalCharacters <= 1) {
+                return 0.0; // IoC is undefined for texts with 0 or 1 characters
+            }
+
+            Map<Character, Integer> characterCounts = new HashMap<>();
+
+            for (char c : originalText.toCharArray()) { //FOR every letter in the original text
+                characterCounts.put(c, characterCounts.getOrDefault(c, 0) + 1);
+            }
+
+                double ioc = 0.0;
+        
+            for (char c : characterCounts.keySet()) { //FOR every letter pair in the text
+
+                int frequency = characterCounts.get(c);
+                ioc += (frequency * (frequency - 1)) / (double)(totalCharacters * (totalCharacters - 1));
+            }
+
+            return ioc;
+        }
     }
 
-}
+
+
 
