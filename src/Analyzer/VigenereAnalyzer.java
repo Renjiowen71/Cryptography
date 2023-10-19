@@ -6,9 +6,11 @@ import Utility.LetterFreq;
 import Utility.Utility;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Map;
 
 public class VigenereAnalyzer implements AnalyzerAlg {
+    private int[] keys;
     private String cipher;
     public VigenereAnalyzer(String cipher){
         this.cipher = cipher;
@@ -19,44 +21,35 @@ public class VigenereAnalyzer implements AnalyzerAlg {
         System.out.println("Encrypted Message = "+cipher);
         ArrayList<StringBuilder> predictionGroups = predictKeyLength(cipher);
         System.out.println("Prediction for Key Length = "+predictionGroups.size());
-//        inputStart(predictionGroups);
-//        for (int i = 0; i<differs.length;i++) {
-//            for (int j = i;j<predictionGroups.size();j++) {
-//                keys[j]+=differs[i];
-//            }
-//        }
-//        for (int key:keys) {
-//            System.out.println(key);
-//        }
+        keys = new int[predictionGroups.size()];
+        inputStart(predictionGroups.size(), cipher);
+    }
+    public void inputStart(int keyLength, String cipher){
+        String cleanText = cleanText(cipher);
+        try {
+            while (true) {
+                System.out.println("Shifting position");
+                int shiftPosition = Utility.SCANNER.nextInt();
+                System.out.println("Number of shifting");
+                int shiftNumber = Utility.SCANNER.nextInt();
+                keys[shiftPosition % keyLength] += shiftNumber;
+                cleanText = shift(cleanText, shiftPosition, shiftNumber, keyLength);
+                System.out.println(cleanText);
+                System.out.println("Try Again?(Y/N)");
+                if (Utility.SCANNER.nextLine().contains("N")) {
+                    break;
+                }
+            }
+        }catch (Exception e){
+            System.out.print("keys = [");
+            for (int key:keys) {
+                System.out.print(key+", ");
+            }
+            System.out.println("]");
+
+        }
 
     }
-
-//    private void inputStart(){
-//        while (true){
-//            Utility.SCANNER.
-//        }
-//    }
-
-    //    private StringBuilder splitAndConquer(List<StringBuilder> predictionGroups){
-//        if(predictionGroups.size()==1) {
-//            return predictionGroups.get(0);
-//        }
-//        List<StringBuilder>stringGroupLeft = predictionGroups.subList(0,predictionGroups.size()/2);
-//        List<StringBuilder>stringGroupRight = predictionGroups.subList(predictionGroups.size()/2,predictionGroups.size());
-//        StringBuilder sbLeft = splitAndConquer(stringGroupLeft);
-//        StringBuilder sbRight = splitAndConquer(stringGroupRight);
-//        StringBuilder merged = merge(sbLeft,sbRight);
-//        return merged;
-//    }
-//    private StringBuilder merge(StringBuilder sb1, StringBuilder sb2){
-//        StringBuilder sb = new StringBuilder();
-//        String[] splitSb1 = sb1.toString().split(",");
-//        String[] splitSb2 = sb2.toString().split(",");
-//        sb.append(splitSb1[0]).append(",").append(splitSb1[1]).append(splitSb2[1]);
-//        int difference = differenceKey(splitSb1[1],splitSb2[1]);
-//        differs[Integer.valueOf(splitSb2[0])]=difference;
-//        return sb;
-//    }
     private ArrayList<StringBuilder> predictKeyLength(String cipher){
         ArrayList<StringBuilder> stringBuilders, predictStringGroups = new ArrayList<>();
         double minimumDistance = Double.MAX_VALUE, distance;
@@ -98,25 +91,15 @@ public class VigenereAnalyzer implements AnalyzerAlg {
         return iocValue;
     }
 
-//    private int differenceKey(String s1, String s2){
-//        double minimumDistance= Double.MAX_VALUE;
-//        int predictDiffKey=0;
-//        for(int i=0;i<26;i++){
-//            String temp = shift(s2,i);
-//            double distance = 0.067 - calculateIOC(s1+temp);
-//            if (minimumDistance>distance){
-//                minimumDistance = distance;
-//                predictDiffKey = i;
-//                System.out.println("predict"+predictDiffKey);
-//            }
-//        }
-//        return predictDiffKey;
-//    }
-
-    private String shift(String s2, int i){
+    private String shift(String cipher, int shiftPosition, int shiftNumber, int keyLength){
         StringBuilder temp = new StringBuilder();
-        for(char c:s2.toCharArray()){
-            temp.append(c+i);
+        for(int i =0; i< cipher.length();i++){
+            if(shiftPosition%keyLength==i%keyLength){
+                char shifted = (char) ('a' + (cipher.charAt(i) - 'a' + shiftNumber) % 26);
+                temp.append(shifted);
+            } else {
+                temp.append(cipher.charAt(i));
+            }
         }
         return temp.toString();
     }
