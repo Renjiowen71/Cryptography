@@ -159,9 +159,10 @@ public class FeistelAnalyzer implements AnalyzerAlg {
     }
 
     public static void tryAnalyzer(String message){
-        int totalRound = 7;
+        //message = "Hvnn^"e^Snf"
+        int totalRound = 5;
         int possibleKeysMax = 9999;
-        String functionOperator = "or";
+        String functionOperator = "and";
         Feistel feistel = new Feistel(totalRound, functionOperator);
         String cipher = feistel.encrypt(message);
         FeistelAnalyzer feistelAnalyzer = new FeistelAnalyzer(cipher, totalRound, functionOperator, possibleKeysMax);

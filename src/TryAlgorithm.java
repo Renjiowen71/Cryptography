@@ -1,6 +1,7 @@
 import Algorithm.Interface.AsyCryptAlg;
 import Algorithm.Interface.CryptAlg;
 import Algorithm.caesarcypher;
+import Utility.Utility;
 
 public class TryAlgorithm {
     public static void run(){
@@ -8,13 +9,13 @@ public class TryAlgorithm {
             Object algObj = ClassUtility.getObj("Algorithm");
             if(algObj instanceof CryptAlg){
                 CryptAlg alg = (CryptAlg) algObj;
-                String message = Utility.run();
+                String message = Utility.getMessage();
                 tryAlg(alg, message);
             } else if (algObj instanceof AsyCryptAlg) {
                 AsyCryptAlg alg1 = (AsyCryptAlg) algObj;
                 System.out.println("Creating second ");
                 AsyCryptAlg alg2 = (AsyCryptAlg) ClassUtility.initClass(alg1.getClass().getName());
-                String message = Utility.run();
+                String message = Utility.getMessage();
                 tryAsyAlg(alg1, alg2, message);
             } else if (algObj.getClass()== caesarcypher.class){
                 caesarcypher caesarCypher= (caesarcypher) algObj;
