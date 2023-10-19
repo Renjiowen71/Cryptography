@@ -17,6 +17,7 @@ public class TranspositionAnalyzer implements AnalyzerAlg {
     int[] result;
 
     public TranspositionAnalyzer(String ciphertext) {
+        //works out possible key length (Assumes padding is kept) (Max key length of 10)
         cipher = ciphertext;
         keyLength = new ArrayList<>();
 
@@ -25,8 +26,8 @@ public class TranspositionAnalyzer implements AnalyzerAlg {
                 keyLength.add(i);
             }
         }
-        System.out.println(keyLength);
-
+        System.out.println("Possible key lengths: "+keyLength);
+        //Reads in dictionary
         dictionary = new ArrayList<String>();
         try {
             BufferedReader bf = new BufferedReader(new FileReader("dictionary.txt"));
@@ -45,23 +46,27 @@ public class TranspositionAnalyzer implements AnalyzerAlg {
     @Override
     public void analyze() {
         int max = 0;
+        //tries each key length assumed suitable
         for (int i = 0; i < keyLength.size(); i++) {
+            //generates the corresponding 2d array with keylength
             generate(keyLength.get(i));
+            //generates first guess with keylength
             int[] nums = new int[keyLength.get(i)];
             for (int j = 0; j < nums.length; j++) {
                 nums[j] = j;
             }
+            //generates all possible permutations with keylength
             ArrayList<int[]> res = permute(nums);
             for (int[] x : res) {
                 int a = check(x);
+                //if score is greater than previous max, save key
                 if(a>max){
                     max = a;
                     result = x;
-                    print(x);
-                    System.out.println(a);
                 }
             }
         }
+        //generartes the output of final answer
         generate(result.length);
         print(result);
         for(int a:result) {
@@ -69,7 +74,7 @@ public class TranspositionAnalyzer implements AnalyzerAlg {
             System.out.print("-");
         }
     }
-
+    //generate the corresponding 2d array from the ciphertext
     public void generate(int keyLength){
         cipherArray = new char[keyLength][(cipher.length())/keyLength];
         int i = 0;
@@ -86,6 +91,7 @@ public class TranspositionAnalyzer implements AnalyzerAlg {
         }
     }
 
+    //uses the dictionary to check the fitness of the result
     public int check(int[] order){
         String t = "";
         for (int i = 0; i < cipher.length()/order.length; i++) {
@@ -126,6 +132,7 @@ public class TranspositionAnalyzer implements AnalyzerAlg {
         return sucess;
     }
 
+    //prints out the plaintext with corresponding key
     public void print(int[] order){
         String t = "";
         for (int i = 0; i < cipher.length()/order.length; i++) {
@@ -135,51 +142,28 @@ public class TranspositionAnalyzer implements AnalyzerAlg {
         }
         System.out.println(t);
     }
-    // Function for swapping two numbers
-    static void swap(int nums[], int l, int i)
-    {
+    //Generate all permutations of an int array returning ArrayList of type int array
+    static ArrayList<int[]> permute(int[] nums) {
+        ArrayList<int[]> res = new ArrayList<int[]>();
+        int x = nums.length - 1;
+        permutations(res, nums, 0, x);
+        return res;
+    }
+    static void swap(int nums[], int l, int i) {
         int temp = nums[l];
         nums[l] = nums[i];
         nums[i] = temp;
     }
-
-    // Function to find the possible
-    // permutations
-    static void permutations(ArrayList<int[]> res,
-                             int[] nums, int l, int h)
-    {
-        // Base case
-        // Add the array to result and return
+    static void permutations(ArrayList<int[]> res, int[] nums, int l, int h) {
         if (l == h) {
             res.add(Arrays.copyOf(nums, nums.length));
             return;
         }
-
-        // Permutations made
         for (int i = l; i <= h; i++) {
             // Swapping
             swap(nums, l, i);
-
-            // Calling permutations for
-            // next greater value of l
             permutations(res, nums, l + 1, h);
-
-            // Backtracking
             swap(nums, l, i);
         }
-    }
-
-    // Function to get the permutations
-    static ArrayList<int[]> permute(int[] nums)
-    {
-        // Declaring result variable
-        ArrayList<int[]> res = new ArrayList<int[]>();
-        int x = nums.length - 1;
-
-        // Calling permutations for the first
-        // time by passing l
-        // as 0 and h = nums.size()-1
-        permutations(res, nums, 0, x);
-        return res;
     }
 }
