@@ -2,53 +2,98 @@ package Analyzer;
 
 import Analyzer.Interface.AnalyzerAlg;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.util.*;
 
 public class SimpleSubstitutionAnalyzer implements AnalyzerAlg {
-    String c;
+    String ciphertext;
     int[] frequency;
-    ArrayList<Character> alphabet;
-    ArrayList<Character> Nfrequency;
-    Map<String, Integer> tripples;
+    char[] nFrequency = "etaoinshrdlcumwfgypbvkjxqz".toCharArray();
+    char[] alphabet;
     char[] guess;
-    int total;
-    Scanner userInput;
-
-    public SimpleSubstitutionAnalyzer(String c){
-        //Initalize variables
-        this.c = c;
-        frequency = new int[26];
-        alphabet = new ArrayList<Character>();
-        Nfrequency = new ArrayList<Character>();
-        guess = new char[26];
-        userInput = new Scanner(System.in);
-        //Count frequency of each letter in ciphertext
-        for(int x = 0;x<26;x++){
-            frequency[x] = 0;
+    ArrayList<Integer>a;
+    public SimpleSubstitutionAnalyzer(String ciphertext){
+        //Read in quad scores
+        a = new ArrayList<Integer>();
+        try {
+            BufferedReader bf = new BufferedReader(new FileReader("a.txt"));
+            String line = bf.readLine();
+            while (line != null) {
+                a.add(Integer.valueOf(line));
+                line = bf.readLine();
+            }
+            bf.close();
+        } catch (Exception e) {
+            System.out.println(e.toString());
         }
-        for(char a:this.c.toCharArray()){
-            if(!(a == ' ' || a == '-')) {
-                frequency[((int) a) - 97] += 1;
+        //Save the ciphertext
+        this.ciphertext = ciphertext;
+        //Generate the frequency of the ciphertext
+        frequency = new int[26];
+        Arrays.fill(frequency,0);
+        generateFrequency();
+        //Generate the alphabet
+        alphabet = new char[26];
+        for(int x = 0;x<26;x++){
+            alphabet[x] = ((char)(97+x));
+        }
+    }
+
+    @Override
+    public void analyze() {
+        //generate the first guess
+        firstGuess();
+
+        //Run hill climb based search
+        int max = 0;
+        boolean cont = true;
+        while(cont) {
+            cont = false;
+            for (int i = 0; i < guess.length; i++) {
+                for (int j = i; j < guess.length; j++) {
+                    char a = guess[i];
+                    char b = guess[j];
+                    //swap
+                    swap(a, b);
+                    String out = generateOutput();
+                    int c = calculate_fit(out);
+                    if(c > max){
+                        max = c;
+                        cont = true;
+                    }
+                    else {
+                        swap(a, b);
+                    }
+                }
             }
         }
-        for(int i:frequency){
-            System.out.println(i);
-        }
 
-        //initialize alphabet order + English natural frequency order
-        for(int x = 0;x<26;x++){
-            alphabet.add((char)(97+x));
-        }
-        String freq = "etaoinshrdlcumwfgypbvkjxqz";
-        for(char a :freq.toCharArray()){
-            Nfrequency.add(a);
-        }
+        //Print result
+        System.out.println(max);
+        System.out.println(generateOutput());
 
-        //generate the first guess, based on english natural frequency
+    }
+
+    //Generate the frequency of each letter present in the ciphertext
+    public void generateFrequency(){
+        //loop through the ciphertext,adding for each instance of character
+        for(char a:ciphertext.toCharArray()){
+            if(!(a == ' ')){
+                frequency[((int)a)-97] ++;
+            }
+        }
+    }
+
+    //generate the first guess based of the frequency found of each letter in the ciphertext
+    public void firstGuess(){
+        //Initalize variables
+        guess = new char[26];
         int[] guard = new int[26];
         Arrays.fill(guard, 0);
         int max = -1;
         int pos = 0;
+        //Find the order from highest to lowest from the frequncy array and map to nFrequency order
         for (int y = 0; y < frequency.length; y++) {
             max = -1;
             for (int x = 0; x < frequency.length; x++) {
@@ -58,102 +103,59 @@ public class SimpleSubstitutionAnalyzer implements AnalyzerAlg {
                 }
             }
             guard[pos] = 1;
-            guess[pos] = Nfrequency.get(y);
-        }
-
-    }
-
-
-    @Override
-    public void analyze() {
-        while(true) {
-            System.out.println(guess);
-            System.out.println("abcdefghijklmnopqrstuvwxyz");
-            String d = generate();
-            System.out.println(d);
-            System.out.println(this.c);
-            total = 0;
-            tripples = new HashMap<String, Integer>();
-            generateTripples(d);
-            String input = userInput.nextLine();
-            if(input.length()  > 2){
-                if(input.charAt(2) == 'q') {
-                    break;
-                }
-            }
-            swap(input);
+            guess[y] = (char)(pos+97);
         }
     }
 
-    public String generate(){
-        StringBuilder r = new StringBuilder();
-        for(char a:c.toCharArray()){
-            if(!(a == ' ' || a == '-')) {
-                r.append(guess[a - 97]);
+    //takes the key and generates the corresponding plaintext
+    public String generateOutput(){
+        StringBuilder out = new StringBuilder();
+        for(char a:ciphertext.toCharArray()){
+            if(!(a == ' ')){
+                out.append(nFrequency[findPosition(a)]);
             }
             else{
-                r.append(' ');
+                out.append(a);
             }
         }
-        return r.toString();
+        return out.toString();
     }
 
-    public void generateTripples(String c) {
-        total = 0;
-        String temp = "";
-        for (char a : c.toCharArray()) {
-            if (a == ' ') {
-                if (temp.length() == 3) {
-                    if (tripples.get(temp) == null) {
-                        tripples.put(temp, 1);
-                    } else {
-                        int b = tripples.get(temp);
-                        tripples.remove(temp);
-                        tripples.put(temp, b + 1);
-                    }
-                }
-                temp = "";
-            } else {
-                temp += a;
+    //Find position of character c in key guess
+    public int findPosition(char c){
+        for(int x = 0;x<guess.length;x++){
+            if(guess[x] == c){
+                return x;
             }
         }
-        if (temp.length() == 3) {
-            if (tripples.get(temp) == null) {
-                tripples.put(temp, 1);
-            } else {
-                int b = tripples.get(temp);
-                tripples.remove(temp);
-                tripples.put(temp, b + 1);
-            }
-        }
-        for (Map.Entry<String, Integer> me :
-                tripples.entrySet()) {
-            total += me.getValue();
-        }
-        for (Map.Entry<String, Integer> me :
-                tripples.entrySet()) {
-
-            // Printing keys
-            System.out.print(me.getKey() + ":");
-            System.out.println(me.getValue()*100/total+"%");
-
-        }
+        return -1;
     }
-    public void swap(String s){
-        char first = s.charAt(0);
-        char second = s.charAt(1);
+
+    //Swap two letters in key
+    public void swap(char first, char second){
         int first_pos = 0;
         int second_pos = 0;
         for(int x = 0;x<guess.length;x++){
-            if(guess[x] == first){
+            if(nFrequency[x] == first){
                 first_pos = x;
             }
-            if(guess[x] == second){
+            if(nFrequency[x] == second){
                 second_pos = x;
             }
         }
-        guess[first_pos] = second;
-        guess[second_pos] = first;
+        char temp = guess[first_pos];
+        guess[first_pos] = guess[second_pos];
+        guess[second_pos] = temp;
     }
 
+    //Maps each quad found in plaintext and sums up score
+    public int calculate_fit(String s){
+        int fitnesss = 0;
+        int quad = (((int)s.charAt(0) -97) << 10) + (((int)s.charAt(1) -97) << 5) + (int)s.charAt(2) - 97;
+        for(int i = 3;i<s.length();i++){
+            quad = ((quad & 0x7FFF) << 5) + (int)s.charAt(i) - 97;
+            fitnesss += a.get(quad);
+        }
+        return fitnesss;
+    }
 }
