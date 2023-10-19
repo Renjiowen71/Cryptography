@@ -92,5 +92,6 @@ public class RsaAnalyzer implements AnalyzerAlg {
     public void analyze() {
         int D = d.intValue();
         System.out.println((cipher.pow(D)).mod(n));
+        System.out.println("d: "+D);
     }
 }

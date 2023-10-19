@@ -72,6 +72,8 @@ public class SimpleSubstitutionAnalyzer implements AnalyzerAlg {
         //Print result
         System.out.println(max);
         System.out.println(generateOutput());
+        System.out.println(nFrequency);
+        System.out.println(guess);
 
     }
 
